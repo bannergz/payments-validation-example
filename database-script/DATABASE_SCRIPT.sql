@@ -1,7 +1,10 @@
 CREATE DATABASE transaction;
 
+DROP TABLE IF EXISTS transaction;
+
 CREATE TABLE "transaction" (
 	id serial4 NOT NULL,
+	amount DECIMAL NOT NULL,
 	"type" varchar(50) NOT NULL,
 	status varchar(50) NOT NULL,
 	created_at timestamp NULL,

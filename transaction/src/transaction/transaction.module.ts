@@ -22,9 +22,8 @@ import { ConfigModule } from '@nestjs/config';
             user: process.env.KNEX_CONNECTION_USER,
             password: process.env.KNEX_CONNECTION_PASSWORD,
             database: process.env.KNEX_CONNECTION_DATABASE,
-            ssl: {
-              rejectUnauthorized: false
-            }
+            port: 5432,
+            ssl: process.env.KNEX_CONNECTION_SSL //Should be disabled in local connection
           },
         },
     }),
