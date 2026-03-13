@@ -1,0 +1,5 @@
+# zap-full-scan rule configuration file
+# This file contains the code for skipes the scan
+
+10035   IGNORE  (WARN-NEW: Strict-Transport-Security Header Not Set)
+10063	IGNORE	(WARN-NEW: Permissions Policy Header Not Set [10063] x 4 )

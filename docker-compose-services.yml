@@ -1,0 +1,56 @@
+services:
+  # ==================== Services ====================
+  ms-payments-bs:
+    image: ms-payments-bs:latest
+    build:
+      context: ./ms-payments-bs
+      dockerfile: Dockerfile
+    container_name: ms-payments-bs
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/payments_db
+      KAFKA_BROKER: kafka:29092
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      PORT: 3000
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    volumes:
+      - ./ms-payments-bs/src:/app/src
+    networks:
+      - payments-network
+  ms-frauds-bs:
+    image: ms-frauds-bs:latest
+    build:
+      context: ./ms-frauds-bs
+      dockerfile: Dockerfile
+    container_name: ms-frauds-bs
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: development
+      KAFKA_BROKER: kafka:29092
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      PORT: 3000
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+    volumes:
+      - ./ms-frauds-bs/src:/app/src
+    networks:
+      - payments-network
+
+
+networks:
+  payments-network:
+    external: true
