@@ -1,0 +1,123 @@
+{
+  "info": {
+    "_postman_id": "d7414a7e-299b-4978-9bd5-e43cc845d042",
+    "name": "Transaction Validator",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "763156"
+  },
+  "item": [
+    {
+      "name": "Health Check - Transaction Service",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:3000/health",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Health Check - Frauds Service",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:3001/health",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Transaction",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var responseBody = pm.response.json();\r",
+              "pm.environment.set(\"externalId\", responseBody.data.createTransaction.transactionExternalId);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation CreateTransaction($createTransactionInput: CreateTransactionInput!) {\r\n    createTransaction(createTransactionInput: $createTransactionInput) {\r\n    \ttransactionExternalId\r\n        transactionType {\r\n            id\r\n            name\r\n        }\r\n        transactionStatus {\r\n            id\r\n            name\r\n        }  \r\n        value\r\n        createdAt\r\n  }\r\n}",
+            "variables": "{\r\n    \"createTransactionInput\" : {\r\n        \"accountExternalIdDebit\": \"{{$guid}}\",\r\n        \"accountExternalIdCredit\": \"{{$guid}}\",\r\n        \"transferTypeId\": 1,\r\n        \"value\": 1000\r\n    }\r\n}"
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/graphql",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "RetrieveTransaction",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query RetrieveTransaction($externalId: String!) {\r\n  retrieveTransaction(externalId: $externalId) {\r\n    transactionExternalId\r\n    transactionType {\r\n      id\r\n      name\r\n    }\r\n    transactionStatus {\r\n      id\r\n      name\r\n    }\r\n    value\r\n    createdAt\r\n  }\r\n}",
+            "variables": "{\r\n  \"externalId\": \"{{externalId}}\"\r\n}"
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/graphql",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "graphql"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

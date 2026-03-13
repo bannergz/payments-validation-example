@@ -1,66 +1,71 @@
 # 🚀 Quick Start Guide
 
-Guía rápida para levantar el proyecto completo con Schema Registry.
+Quick guide to launch the full project with Schema Registry.
 
-## 5 Pasos Rápidos
+## Prerequisites
 
-### 1. Verificar requisitos
+1. Install a package manager:
 
-```bash
-docker --version      # Debe ser 20.10+
-docker-compose --version  # Debe ser 1.29+
+- [homebrew](https://brew.sh/) for Mac
+- [chocolatey](https://chocolatey.org/install) for Windows
+
+2. Install **[Node.js](https://nodejs.org/en/download)** and **make**:
+
+```sh
+# For Mac:
+brew install make
+# For Windows:
+choco install make
 ```
 
-### 2. Navegar a la carpeta
+3. Make sure you have Docker and Docker Compose:
 
-```bash
-cd /ruta/a/app-nodejs-codechallenge
+```sh
+docker --version      # Should be 20.10+
+docker-compose --version  # Should be 1.29+
 ```
 
-### 3. Levantar TODOS los servicios
+4. Copy the environment file per service folder:
 
-```bash
-# Opción A: Con Docker Compose directamente
-docker-compose up -d
-
-# Opción B: Con el script helper (Linux/Mac)
-chmod +x docker-helper.sh
-./docker-helper.sh up
-
-# Opción C: Con el script helper (Windows)
-docker-helper.bat up
+```sh
+cp .env.example .env
 ```
 
-### 4. Esperar a que todo esté listo (30-60 segundos)
+5. Install dependencies:
 
-```bash
-# Ver estado
+```sh
+npm install
+```
+
+## Deploy the Application
+
+1. Start all services and infrastructure:
+
+```sh
+make me-happy
+```
+
+2. Wait for all services to be up (about 30-60 seconds). You can check status with:
+
+```sh
 docker-compose ps
-
-# Ver logs
 docker-compose logs -f
-
-# O con script (Linux/Mac)
-./docker-helper.sh health
-
-# O con script (Windows)
-docker-helper.bat health
 ```
 
-### 5. Acceder a los servicios
+3. Access the main services:
 
-| Servicio            | URL                           | Descripción                     |
-| ------------------- | ----------------------------- | ------------------------------- |
-| **GraphQL API**     | http://localhost:3000/graphql | Crear y consultar transacciones |
-| **Kafka UI**        | http://localhost:8080         | Monitorear topics y mensajes    |
-| **Schema Registry** | http://localhost:8081         | Gestionar esquemas              |
-| **Health Check**    | http://localhost:3000/health  | Estado de la app                |
+| Service             | URL                           | Description                   |
+| ------------------- | ----------------------------- | ----------------------------- |
+| **GraphQL API**     | http://localhost:3000/graphql | Create and query transactions |
+| **Kafka UI**        | http://localhost:8080         | Monitor topics and messages   |
+| **Schema Registry** | http://localhost:8081         | Manage schemas                |
+| **Health Check**    | http://localhost:3000/health  | App health status             |
 
 ---
 
-## Primero Intento de API
+## First API Attempt
 
-### 1. Crear una transacción
+### 1. Create a transaction
 
 ```bash
 curl -X POST http://localhost:3000/graphql \
@@ -70,82 +75,91 @@ curl -X POST http://localhost:3000/graphql \
   }'
 ```
 
-### 2. Consultar la transacción
+### 2. Query the transaction
 
 ```bash
 curl -X POST http://localhost:3000/graphql \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "query { getTransaction(transactionExternalId: \"<ID-DEL-PASO-1>\") { transactionExternalId value transactionStatus { name } } }"
+    "query": "query { getTransaction(transactionExternalId: \"<ID-FROM-STEP-1>\") { transactionExternalId value transactionStatus { name } } }"
   }'
 ```
 
-### 3. Ver el mensaje en Kafka
+### 3. View the message in Kafka
 
-- Accede a http://localhost:8080
-- Ve a **Topics** → `transaction-validation-request`
-- Verás el mensaje publicado
+- Go to http://localhost:8080
+- Go to **Topics** → `transaction-validation-request`
+- You will see the published message
 
 ---
 
-## Detener Todo
+## Stop Everything
 
 ```bash
-# Parar servicios (mantiene datos)
+# Stop services (keep data)
 docker-compose stop
 
-# Parar y eliminar (mantiene datos)
+# Stop and remove (keep data)
 docker-compose down
 
-# Parar, eliminar Y borrar datos
+# Stop, remove and delete data
 docker-compose down -v
+
+# Stop and remove everything in a single command
+make me-down
 ```
 
 ---
 
-## Desarrollo Local
+## Local Development
 
-Si quieres desarrollar con hot-reload:
+If you want to develop with hot-reload:
 
 ```bash
-# 1. Levanta solo infraestructura
-docker-compose up -d postgres mongo zookeeper kafka schema-registry kafka-ui
-
-# 2. En otra terminal, entra a ms-payments-bs
+# 1. In another terminal, go to ms-payments-bs
 cd ms-payments-bs
 
-# 3. Instala dependencias
+# 2. Initialize Infraestructure, schema, topics, db
+make me-happy
+
+# 3. Install dependencies
 npm install
 
-# 4. Genera cliente Prisma
-npm run db:generate
+# 4. Start in watch mode
+npm run start:dev
 
-# 5. Inicia con watch
+# 5. In another terminal, go to ms-frauds-bs
+cd ../ms-frauds-bs
+
+# 6. Install dependencies
+npm install
+
+# 7. Start in watch mode
 npm run start:dev
 ```
 
 ---
 
-## Scripts Helper
+## Helper Scripts
 
 ### Linux/Mac
 
 ```bash
-./docker-helper.sh help        # Ver todos los comandos
-./docker-helper.sh up          # Levanta todo
-./docker-helper.sh logs-app    # Ver logs de la app
-./docker-helper.sh restart     # Reinicia
-./docker-helper.sh down        # Detiene
+./docker-helper.sh help        # Show all commands
+./docker-helper.sh up          # Start everything
+./docker-helper.sh logs-app    # View app logs
+./docker-helper.sh restart     # Restart
+./docker-helper.sh down        # Stop
 ```
 
 ### Windows
 
 ```batch
-docker-helper.bat help      # Ver todos los comandos
-docker-helper.bat up        # Levanta todo
-docker-helper.bat logs-app  # Ver logs de la app
-docker-helper.bat restart   # Reinicia
-docker-helper.bat down      # Detiene
+docker-helper.bat help      # Show all commands
+docker-helper.bat up        # Start everything
+docker-helper.bat logs-app  # View app logs
+docker-helper.bat restart   # Restart
+docker-helper.bat down      # Stop
 ```
 
 ---
@@ -155,7 +169,7 @@ docker-helper.bat down      # Detiene
 ### Error: "Ports already in use"
 
 ```bash
-# Liberar puerto 3000
+# Free port 3000
 # Linux/Mac:
 kill $(lsof -t -i :3000)
 
@@ -164,31 +178,31 @@ netstat -ano | findstr :3000
 taskkill /PID <PID> /F
 ```
 
-### Schema Registry no conecta
+### Schema Registry not connecting
 
 ```bash
-# Ver logs
+# View logs
 docker-compose logs schema-registry
 
-# Reiniciar
+# Restart
 docker-compose restart schema-registry
 ```
 
-### Red connection error
+### Network connection error
 
 ```bash
-# Verificar redes
+# Check networks
 docker network ls
 
-# Recrear todo
+# Recreate everything
 docker-compose down -v
 docker-compose up -d
 ```
 
 ---
 
-## Siguiente Paso
+## Next Step
 
-Sigue leyendo [README.md](README.md) para documentación completa.
+Continue reading [README.md](README.md) for full documentation.
 
-¡Listo! 🎉
+Done! 🎉
