@@ -29,23 +29,34 @@
    ```
 3. Set-up containers environments
    ```sh
+   #Verify docker is started
+   docker ps
+   #Start services
    make me-happy
    ```
 4. You can test the service with yape-challenge.postman_collection.json in POSTMAN
 
-5. To downstart services
+5. Run app per service
+
+   ```sh
+   npm run start
+   ```
+
+6. To downstart services
 
    ```sh
    make me-down
    ```
 
-6. Prisma Studio (http://localhost:51212/)
+7. Prisma Studio (http://localhost:51212/)
 
    ```sh
    npx prisma studio
    ```
 
-7. Kafka UI (http://localhost:8080/ui).
+8. Kafka UI (http://localhost:8080/ui).
+
+9. Unleash UI (http://localhost:4242/login) credentials: admin:unleash4all .
 
 ## Ejecución de microservicios
 

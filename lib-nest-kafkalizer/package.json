@@ -1,0 +1,27 @@
+{
+  "name": "lib-nest-kafkalizer",
+  "version": "0.1.0",
+  "description": "Librería para facilitar el uso de kafkajs en proyectos Node.js/NestJS, con abstracción de configuración, DLQ, reintentos y validación con schema registry.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "test": "jest"
+  },
+  "keywords": ["kafkajs", "nestjs", "kafka", "dlq", "schema-registry", "retry"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "kafkajs": "^2.2.4",
+    "@kafkajs/confluent-schema-registry": "^3.0.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  }
+}

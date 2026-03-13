@@ -1,0 +1,90 @@
+import { Injectable, Logger } from '@nestjs/common';
+
+import { Kafka, Producer } from 'kafkajs';
+import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
+import { kafkaConfig } from '../config/kafka.config.js';
+import { TransactionValidationRequestEvent } from '../dto/input/transaction-validation-request.event.js';
+
+@Injectable()
+export class TransactionEventProducer {
+
+  private kafka: Kafka;
+  private producer: Producer;
+  private topic: string;
+  private schemaRegistry: SchemaRegistry;
+  private schemaSubject: string;
+  private readonly logger = new Logger(TransactionEventProducer.name);
+
+  constructor() {
+    this.kafka = new Kafka({
+      clientId: kafkaConfig.clientId,
+      brokers: kafkaConfig.brokers,
+    });
+    this.producer = this.kafka.producer();
+    this.topic = kafkaConfig.transactionValidationResponseTopic;
+    this.schemaRegistry = new SchemaRegistry({ host: kafkaConfig.schemaRegistryUrl });
+    this.schemaSubject = kafkaConfig.transactionValidationSubject;
+  }
+
+  async onModuleInit() {
+    try {
+      await this.producer.connect();
+      this.logger.log('Kafka producer connected');
+    } catch (error) {
+      this.logger.error('Failed to connect Kafka producer', error);
+      throw error;
+    }
+  }
+
+  async onModuleDestroy() {
+    await this.producer.disconnect();
+    this.logger.log('Kafka producer disconnected');
+  }
+
+  async publishTransactionValidationResponse(
+    event: TransactionValidationRequestEvent,
+  ): Promise<void> {
+    try {
+      // Usa el subject exactamente como está registrado en el Schema Registry
+      const subject = this.schemaSubject;
+      let id: number;
+      try {
+        id = await this.schemaRegistry.getLatestSchemaId(subject);
+      } catch (err) {
+        this.logger.error(`Schema subject '${subject}' not found in registry.`, err);
+        throw err;
+      }
+
+      // Log del objeto a enviar para comparar con el schema
+      const payload = event.toJSON();
+
+      // Serializa el mensaje usando el schema del registry
+      const value = await this.schemaRegistry.encode(id, payload);
+
+      const message = {
+        key: event.transaction.transactionExternalId,
+        value,
+        headers: {
+          'correlation-id': event.eventId,
+          timestamp: Date.now().toString(),
+        },
+      };
+
+      const result = await this.producer.send({
+        topic: this.topic,
+        messages: [message],
+      });
+
+      this.logger.log(
+        `Transaction validation response published: ${event.transaction.transactionExternalId}`,
+      );
+      this.logger.debug(`Kafka result: ${JSON.stringify(result)}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to publish transaction validation response: ${error.message}`,
+        error,
+      );
+      throw error;
+    }
+  }
+}
