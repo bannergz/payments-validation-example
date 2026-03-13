@@ -7,12 +7,12 @@ import { TransactionValidationRequestEvent } from '../dto/input/transaction-vali
 import { TransactionMapper } from '../mappers/transaction.mapper.js';
 
 @Injectable()
-export class TransactionValidationConsumer implements OnModuleInit {
+export class TransactionRequestConsumer implements OnModuleInit {
   private KafkaClient: Kafka;
   private consumer: Consumer;
   private topic: string;
   private schemaRegistry: SchemaRegistry;
-  private readonly logger = new Logger(TransactionValidationConsumer.name);
+  private readonly logger = new Logger(TransactionRequestConsumer.name);
 
   constructor(
     private readonly fraudsValidationService: FraudsValidationService,

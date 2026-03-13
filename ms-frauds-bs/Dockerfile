@@ -13,9 +13,6 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Generate Prisma client
-RUN npm run db:generate
-
 # Build the application
 RUN npm run build
 
@@ -36,8 +33,6 @@ COPY --from=builder --chown=node:node /app/dist ./dist
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 
 COPY --from=builder --chown=node:node /app/package*.json ./
-
-COPY --from=builder --chown=node:node /app/prisma ./prisma
 
 # Copiar .env
 COPY --from=builder --chown=node:node /app/.env ./.env
