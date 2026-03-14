@@ -144,4 +144,4 @@ npm run start:dev
 
 Continue reading [README.md](README.md) for full documentation.
 
-Done! 🎉
+Done! 🎉 🚀
