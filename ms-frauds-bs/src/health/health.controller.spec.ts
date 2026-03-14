@@ -16,7 +16,8 @@ describe('HealthController', () => {
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
-      expect(healthController.health()).toBe('Service is healthy!');
+      expect(healthController.health()).toHaveProperty('status');
+      expect(healthController.health()).toHaveProperty('message');
     });
   });
 });

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
 import { GraphQLExceptionFilter } from './filters/graphql-exception.filter.js';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Importar y registrar codec Snappy de forma dinámica
 await import('./commons/register-snappy.cjs');
@@ -30,9 +31,22 @@ async function bootstrap() {
     }),
   );
 
+  // Swagger/OpenAPI setup
+  const config = new DocumentBuilder()
+    .setTitle('Payments Service API')
+    .setDescription('API documentation for Payments Service')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document, {
+    // Fastify: serve swagger-ui-express via fastify-express under the hood
+    swaggerOptions: { persistAuthorization: true },
+  });
+
   // bind explicitly to 0.0.0.0 when running in containerized environments
   const port = process.env.SERVER_PORT || 3001;
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 App running on port ${port}`);
+  console.log(`📚 Swagger UI available at /docs`);
 }
 bootstrap();
