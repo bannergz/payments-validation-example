@@ -7,8 +7,6 @@ import { TransactionValidationRequestEvent } from '../dto/input/transaction-vali
 @Injectable()
 export class TransactionMapper {
 
-  
-
   fromEventToDomain(event: TransactionEvent): Transaction {
     return {
       transactionExternalId: event.transactionExternalId,

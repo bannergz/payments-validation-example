@@ -7,6 +7,7 @@
   "type": "module",
   "license": "UNLICENSED",
   "scripts": {
+    "db:generate": "prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -21,11 +22,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@apollo/server": "^5.4.0",
     "@as-integrations/fastify": "^3.1.0",
     "@kafkajs/confluent-schema-registry": "^3.9.0",
+    "@nestjs/apollo": "^13.2.4",
     "@nestjs/common": "^11.0.16",
     "@nestjs/core": "^11.1.16",
+    "@nestjs/graphql": "^13.2.4",
     "@nestjs/platform-fastify": "^11.1.16",
+    "@prisma/adapter-pg": "^7.5.0",
+    "@prisma/client": "^7.4.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.4",
     "dotenv": "^17.3.1",
@@ -33,6 +39,7 @@
     "graphql": "^16.13.1",
     "kafkajs": "^2.2.4",
     "kafkajs-snappy": "^1.1.0",
+    "prisma": "^7.5.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "snappy": "^7.3.3"
@@ -50,11 +57,11 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
-    "jest": "^30.0.0",
+    "jest": "^30.3.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
+    "ts-jest": "^29.4.6",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
@@ -65,7 +72,10 @@
     "file-type": "21.3.2",
     "ajv@>=7.0.0-alpha.0 <8.18.0": "8.18.0",
     "ajv@< 6.14.0": "6.14.0",
-    "fastify@>= 5.7.2 <= 5.8.0": "5.8.2"
+    "fastify@>= 5.7.2 <= 5.8.0": "5.8.2",
+    "lodash@>= 4.0.0 <= 4.17.22": "4.17.23",
+    "@hono/node-server": "1.19.11",
+    "hono": "4.12.7"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Transaction {
+  id                  Int               @id @default(autoincrement())
+  externalId          String            @unique @default(uuid()) @db.Uuid
+  transactionTypeId   Int
+  transactionStatusId Int
+  accountDebitId      String            @db.Uuid
+  accountCreditId     String            @db.Uuid
+  value               Float
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  transactionStatus   TransactionStatus @relation(fields: [transactionStatusId], references: [id])
+  transactionType     TransactionType   @relation(fields: [transactionTypeId], references: [id])
+
+  @@index([externalId])
+}
+
+model TransactionType {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  transactions Transaction[]
+
+  @@index([name])
+}
+
+model TransactionStatus {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  transactions Transaction[]
+
+  @@index([name])
+}
