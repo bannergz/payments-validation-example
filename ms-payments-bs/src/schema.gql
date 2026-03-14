@@ -1,0 +1,77 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""Transaction Type"""
+type TransactionType {
+  """Transaction Type ID"""
+  id: Float!
+
+  """Transaction Type Name"""
+  name: String!
+}
+
+"""Transaction Status"""
+type TransactionStatus {
+  """Transaction Status ID"""
+  id: Float!
+
+  """Transaction Status Name"""
+  name: String!
+}
+
+"""Transaction"""
+type Transaction {
+  """Transaction External ID"""
+  transactionExternalId: String!
+
+  """Account External ID for Debit"""
+  accountExternalIdDebit: String!
+
+  """Account External ID for Credit"""
+  accountExternalIdCredit: String!
+
+  """Transaction Type"""
+  transactionType: TransactionType!
+
+  """Transaction Status"""
+  transactionStatus: TransactionStatus!
+
+  """Transaction Value"""
+  value: Float!
+
+  """Transaction Created At"""
+  createdAt: DateTime!
+
+  """Transaction Updated At"""
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  """Retrieves a Single transaction by its external ID"""
+  retrieveTransaction(externalId: String!): Transaction!
+}
+
+type Mutation {
+  """Creates a Single transaction to be validated and processed"""
+  createTransaction(createTransactionInput: CreateTransactionInput!): Transaction!
+}
+
+input CreateTransactionInput {
+  """Account External ID for Debit"""
+  accountExternalIdDebit: String!
+
+  """Account External ID for Credit"""
+  accountExternalIdCredit: String!
+
+  """Transfer Type ID"""
+  transferTypeId: Float!
+
+  """Transaction Value"""
+  value: Float!
+}
