@@ -11,7 +11,10 @@ export class HealthController {
    * Health check endpoint
    */
   @Get()
-  @ApiOperation({ summary: 'Health check', description: 'Returns the health status of the service.' })
+  @ApiOperation({
+    summary: 'Health check',
+    description: 'Returns the health status of the service.',
+  })
   @ApiOkResponse({
     description: 'Service is healthy',
     schema: {

@@ -3,7 +3,6 @@ import { PrismaService } from '../../db/prisma.service.js';
 import { TransactionEventProducer } from './transaction.producer.service.js';
 import { TransactionMapper } from '../mappers/transaction.mapper.js';
 import { Transaction } from '../model/transaction.model.js';
-import { TransactionValidationEvent } from '../dto/output/transaction-validation.event.js';
 import { TransactionStatus } from '../model/transaction-status.model.js';
 
 @Injectable()
@@ -43,15 +42,15 @@ export class TransactionService {
 
     // Publish validation event to Kafka
     try {
-      await this.eventProducer
-      .publishTransactionValidationRequest(this.mapper
-        .fromDomainToValidationEvent(domainTransaction));
+      await this.eventProducer.publishTransactionValidationRequest(
+        this.mapper.fromDomainToValidationEvent(domainTransaction),
+      );
     } catch (error) {
       // Log error but don't fail the transaction creation
       console.error('Failed to publish transaction validation event:', error);
     }
 
-    return domainTransaction
+    return domainTransaction;
   }
 
   async retrieveTransaction(externalId: string): Promise<Transaction> {
@@ -72,7 +71,10 @@ export class TransactionService {
     return this.mapper.fromPrismaToDomain(response);
   }
 
-  async updateTransaction(externalId: string, transactionStatus: TransactionStatus): Promise<any> {
+  async updateTransaction(
+    externalId: string,
+    transactionStatus: TransactionStatus,
+  ): Promise<any> {
     const response = await this.prismaService.transaction.update({
       where: { externalId },
       data: {

@@ -9,6 +9,13 @@ import { TransactionValidationResponseConsumer } from './event/transaction.valid
 
 @Module({
   imports: [PrismaModule],
-  providers: [TransactionResolver, TransactionService, TransactionMapper, PrismaService, TransactionEventProducer, TransactionValidationResponseConsumer],
+  providers: [
+    TransactionResolver,
+    TransactionService,
+    TransactionMapper,
+    PrismaService,
+    TransactionEventProducer,
+    TransactionValidationResponseConsumer,
+  ],
 })
 export class TransactionModule {}

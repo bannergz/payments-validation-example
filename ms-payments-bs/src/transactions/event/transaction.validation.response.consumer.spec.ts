@@ -19,7 +19,9 @@ describe('TransactionValidationResponseConsumer', () => {
       ],
     }).compile();
 
-    consumer = module.get<TransactionValidationResponseConsumer>(TransactionValidationResponseConsumer);
+    consumer = module.get<TransactionValidationResponseConsumer>(
+      TransactionValidationResponseConsumer,
+    );
   });
 
   it('should be defined', () => {

@@ -17,9 +17,14 @@ export class TransactionResolver {
     name: 'createTransaction',
     description: 'Creates a Single transaction to be validated and processed',
   })
-  createTransaction(@Args('createTransactionInput') createTransactionInput: CreateTransactionInput): Promise<Transaction> {
-    const transaction = this.transactionMapper.createTransactionToDomain(createTransactionInput);
-    
+  createTransaction(
+    @Args('createTransactionInput')
+    createTransactionInput: CreateTransactionInput,
+  ): Promise<Transaction> {
+    const transaction = this.transactionMapper.createTransactionToDomain(
+      createTransactionInput,
+    );
+
     return this.transactionService.createTransaction(transaction);
   }
 
@@ -27,8 +32,9 @@ export class TransactionResolver {
     name: 'retrieveTransaction',
     description: 'Retrieves a Single transaction by its external ID',
   })
-  retrieveTransaction(@Args('externalId', ParseUUIDPipe) externalId: string): Promise<Transaction> {
+  retrieveTransaction(
+    @Args('externalId', ParseUUIDPipe) externalId: string,
+  ): Promise<Transaction> {
     return this.transactionService.retrieveTransaction(externalId);
   }
-  
 }

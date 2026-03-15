@@ -19,8 +19,10 @@ export class TransactionEventProducer {
       brokers: kafkaConfig.brokers,
     });
     this.producer = this.kafka.producer();
-    this.topic = kafkaConfig.transactionValidationRequestTopic
-    this.schemaRegistry = new SchemaRegistry({ host: kafkaConfig.schemaRegistryUrl });
+    this.topic = kafkaConfig.transactionValidationRequestTopic;
+    this.schemaRegistry = new SchemaRegistry({
+      host: kafkaConfig.schemaRegistryUrl,
+    });
     this.schemaSubject = kafkaConfig.transactionValidationSubject;
   }
 
@@ -49,7 +51,10 @@ export class TransactionEventProducer {
       try {
         id = await this.schemaRegistry.getLatestSchemaId(subject);
       } catch (err) {
-        this.logger.error(`Schema subject '${subject}' not found in registry.`, err);
+        this.logger.error(
+          `Schema subject '${subject}' not found in registry.`,
+          err,
+        );
         throw err;
       }
 
@@ -77,12 +82,26 @@ export class TransactionEventProducer {
         `Transaction validation request published: ${event.transaction.transactionExternalId}`,
       );
       this.logger.debug(`Kafka result: ${JSON.stringify(result)}`);
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMsg = 'Unknown error';
+      if (isErrorWithMessage(error)) {
+        errorMsg = error.message;
+      }
       this.logger.error(
-        `Failed to publish transaction validation request: ${error.message}`,
+        `Failed to publish transaction validation request: ${errorMsg}`,
         error,
       );
       throw error;
+    }
+
+    // Helper type guard
+    function isErrorWithMessage(err: unknown): err is { message: string } {
+      return (
+        typeof err === 'object' &&
+        err !== null &&
+        'message' in err &&
+        typeof (err as { message: unknown }).message === 'string'
+      );
     }
   }
 }

@@ -18,7 +18,10 @@ describe('TransactionService', () => {
         TransactionService,
         { provide: PrismaService, useClass: PrismaServiceMock },
         { provide: TransactionMapper, useClass: TransactionMapperMock },
-        { provide: TransactionEventProducer, useClass: TransactionEventProducerMock },
+        {
+          provide: TransactionEventProducer,
+          useClass: TransactionEventProducerMock,
+        },
       ],
     }).compile();
 

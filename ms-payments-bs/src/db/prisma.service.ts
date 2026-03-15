@@ -4,7 +4,6 @@ import { PrismaClient } from '../generated/prisma/client.js';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
-  
   constructor() {
     const connectionString = process.env.DATABASE_URL;
     if (!connectionString) {
@@ -13,5 +12,4 @@ export class PrismaService extends PrismaClient {
     const adapter = new PrismaPg({ connectionString });
     super({ adapter });
   }
-
 }
