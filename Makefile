@@ -1,10 +1,20 @@
 success:
-	@echo -e "\033[32m \xE2\x9C\x94 \033[0m Build successful!  "
+	@if docker network inspect payments-network >/dev/null 2>&1; then \
+		echo -e "Docker network \033[32m payments-network already exists. \xE2\x9C\x94 \033[0m Continuing..."; \
+	else \
+		echo "Creating docker \033[32m network payments-network... \033[0m"; \
+		docker network create payments-network; \
+		echo -e "Docker network\033[32m payments-network created successfully. \xE2\x9C\x94 \033[0m"; \
+	fi
 
 me-happy:
-	@echo -e "Creating docker network -> \033[32mpayments-network\033[0m"
-	docker network create payments-network
-	@echo "\033[32m \xE2\x9C\x94 \033[0m Network payments-network successfully created."
+	@if docker network inspect payments-network >/dev/null 2>&1; then \
+		echo -e "Docker network \033[32m payments-network already exists. \xE2\x9C\x94 \033[0m Continuing..."; \
+	else \
+		echo "Creating docker \033[32m network payments-network... \033[0m"; \
+		docker network create payments-network; \
+		echo -e "Docker network\033[32m payments-network created successfully. \xE2\x9C\x94 \033[0m"; \
+	fi
 	@${MAKE} unleash-up
 	@${MAKE} infra-up
 	@${MAKE} schema
