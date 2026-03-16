@@ -1,3 +1,4 @@
+import { jest, describe, it, beforeEach, expect } from '@jest/globals';
 import { KafkaConsumerService } from '../src/services/kafka-consumer.service.js';
 import { SchemaRegistryService } from '../src/services/schema-registry.service.js';
 import { KafkaProducerService } from '../src/services/kafka-producer.service.js';

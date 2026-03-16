@@ -1,13 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { Kafka, Producer, IHeaders } from 'kafkajs';
-import {
-  KafkaConnectionConfig,
-  KafkaProducerConfig,
-  PublishOptions,
-  PublishResult,
-  MessageMetadata,
-} from '../types';
-import { SchemaRegistryService } from './schema-registry.service';
+import { SchemaRegistryService } from './schema-registry.service.js';
+import type { KafkaConnectionConfig, KafkaProducerConfig, PublishOptions, PublishResult } from 'src/types/kafka.types.js';
 
 /**
  * Servicio genérico para publicar mensajes en Kafka

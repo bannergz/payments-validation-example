@@ -1,9 +1,4 @@
-import {
-  KafkaConnectionConfig,
-  SchemaRegistryConfig,
-  KafkaProducerConfig,
-  KafkaConsumerConfig,
-} from '../types';
+import { KafkaConnectionConfig, KafkaConsumerConfig, KafkaProducerConfig, SchemaRegistryConfig } from "src/types/kafka.types.js";
 
 /**
  * Helper para construir KafkaConnectionConfig desde variables de entorno

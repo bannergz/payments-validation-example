@@ -7,6 +7,7 @@ module.exports = {
       'ts-jest',
       {
         useESM: true,
+        isolatedModules: true,
         tsconfig: '<rootDir>/tsconfig.test.json',
       },
     ],
@@ -15,12 +16,12 @@ module.exports = {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@nestjs|kafkajs|@kafkajs|class-validator|class-transformer|rxjs)/)',
+    'node_modules/(?!(@nestjs|@prisma|kafkajs|class-validator|class-transformer|rxjs|@kafkajs|source-map-support|@as-integrations)/)',
   ],
   rootDir: './',
   roots: ['<rootDir>/test', '<rootDir>/src'],
   testMatch: ['**/test/**/*.spec.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
-  collectCoverageFrom: ['src/**/*.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/generated/**'],
   verbose: true,
 };

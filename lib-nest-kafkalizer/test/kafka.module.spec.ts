@@ -1,12 +1,10 @@
+import { KafkaConsumerService } from './../src/services/kafka-consumer.service.js';
+import { KafkaProducerService } from './../src/services/kafka-producer.service.js';
+import { KafkaServiceRegistry } from './../src/services/kafka-service-registry.service.js';
+import { describe, it, beforeEach, afterEach, expect } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { KafkaModule } from '../src/config/kafka.module';
-import {
-  KafkaProducerService,
-  KafkaConsumerService,
-  KafkaServiceRegistry,
-  SchemaRegistryService,
-} from '../src/services';
-import { KafkaModuleOptions } from '../src/config/kafka.module';
+import { KafkaModule } from '../src/config/kafka.module.js';
+import { KafkaModuleOptions } from '../src/config/kafka.module.js';
 
 describe('KafkaModule - Multi Producer/Consumer Support', () => {
   let module: TestingModule;

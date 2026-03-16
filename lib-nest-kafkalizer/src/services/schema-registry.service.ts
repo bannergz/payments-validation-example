@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
-import { SchemaRegistryConfig } from '../types';
+import { SchemaRegistryConfig } from 'src/types/kafka.types.js';
 
 /**
  * Servicio de Schema Registry - maneja la codificación/decodificación de mensajes

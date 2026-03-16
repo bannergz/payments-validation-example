@@ -1,11 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
-import {
-  KafkaConnectionConfig,
-  KafkaConsumerConfig,
-  KafkaMessage,
-} from '../types';
-import { SchemaRegistryService } from './schema-registry.service';
+import { SchemaRegistryService } from './schema-registry.service.js';
+import type { KafkaConnectionConfig, KafkaConsumerConfig, KafkaMessage } from 'src/types/kafka.types.js';
 
 /**
  * Handler para procesar mensajes del consumer

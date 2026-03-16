@@ -1,19 +1,17 @@
+import { 
+  KafkaConnectionConfig, 
+  KafkaConsumerConfig, 
+  KafkaProducerConfig, 
+  NamedConsumerConfig, 
+  NamedProducerConfig, 
+  SchemaRegistryConfig 
+} from './../types/kafka.types.js';
 import { Module, DynamicModule, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  KafkaConnectionConfig,
-  KafkaProducerConfig,
-  KafkaConsumerConfig,
-  SchemaRegistryConfig,
-  NamedProducerConfig,
-  NamedConsumerConfig,
-} from '../types';
-import {
-  SchemaRegistryService,
-  KafkaProducerService,
-  KafkaConsumerService,
-  KafkaServiceRegistry,
-} from '../services';
+import { KafkaConsumerService } from '../../src/services/kafka-consumer.service.js';
+import { KafkaProducerService } from '../../src/services/kafka-producer.service.js';
+import { KafkaServiceRegistry } from '../../src/services/kafka-service-registry.service.js';
+import { SchemaRegistryService } from '../../src/services/schema-registry.service.js';
 
 export interface KafkaModuleOptions {
   kafkaConfig: KafkaConnectionConfig;
