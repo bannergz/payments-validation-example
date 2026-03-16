@@ -66,6 +66,6 @@ export class SchemaRegistryService {
     if (!this.registry) {
       throw new Error('Schema Registry is not enabled or initialized');
     }
-    return this.registry.getSchemaById(id);
+    return this.registry.getSchema(id);
   }
 }
