@@ -1,5 +1,5 @@
 import { Consumer, Kafka } from 'kafkajs';
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SchemaRegistry } from '@kafkajs/confluent-schema-registry';
 import { kafkaConfig } from '../config/kafka.config.js';
 import { FraudsValidationService } from '../services/frauds.validation.service.js';
@@ -16,14 +16,19 @@ export class TransactionRequestConsumer implements OnModuleInit {
 
   constructor(
     private readonly fraudsValidationService: FraudsValidationService,
-    private readonly transactionMapper: TransactionMapper) {
+    private readonly transactionMapper: TransactionMapper,
+  ) {
     this.KafkaClient = new Kafka({
       clientId: kafkaConfig.clientId,
       brokers: kafkaConfig.brokers,
     });
-    this.consumer = this.KafkaClient.consumer({ groupId: kafkaConfig.fraudsConsumerGroupId });
+    this.consumer = this.KafkaClient.consumer({
+      groupId: kafkaConfig.fraudsConsumerGroupId,
+    });
     this.topic = kafkaConfig.transactionValidationRequestTopic;
-    this.schemaRegistry = new SchemaRegistry({ host: kafkaConfig.schemaRegistryUrl });
+    this.schemaRegistry = new SchemaRegistry({
+      host: kafkaConfig.schemaRegistryUrl,
+    });
   }
 
   async onModuleInit() {
@@ -36,19 +41,21 @@ export class TransactionRequestConsumer implements OnModuleInit {
     this.logger.log(`Subscribed to topic: ${this.topic}`);
 
     await this.consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
+      eachMessage: async ({ message }) => {
         try {
           if (!message.value) {
             this.logger.warn('Received message with empty value');
             return;
           }
 
-          const eventData = await this.schemaRegistry.decode(message.value);
-          const validationEvent = eventData as TransactionValidationRequestEvent;
+          const eventData = (await this.schemaRegistry.decode(
+            message.value,
+          )) as TransactionValidationRequestEvent;
 
-          this.logger.log(`Received event: ${JSON.stringify(validationEvent)}`);
-          await this.fraudsValidationService
-            .validateTransaction(this.transactionMapper.fromEventToDomain(validationEvent.transaction));
+          this.logger.log(`Received event: ${JSON.stringify(eventData)}`);
+          await this.fraudsValidationService.validateTransaction(
+            this.transactionMapper.fromEventToDomain(eventData.transaction),
+          );
         } catch (err) {
           this.logger.error('Error processing message', err);
         }

@@ -1,9 +1,9 @@
-import { TransactionEvent } from "./transaction.event.js";
+import { TransactionEvent } from './transaction.event.js';
 
 export class TransactionValidationEvent {
   eventId: string; // UUID
   eventTimestamp: Date; // ISO 8601
-  eventType: 'TRANSACTION_CREATED' = 'TRANSACTION_CREATED';
+  eventType = 'TRANSACTION_CREATED' as const;
   transaction: TransactionEvent;
 
   constructor(transactionEvent: TransactionEvent) {

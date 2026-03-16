@@ -6,7 +6,6 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
-import { GraphQLExceptionFilter } from './filters/graphql-exception.filter.js';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 // Importar y registrar codec Snappy de forma dinámica
@@ -17,9 +16,6 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-
-  // Apply global exception filter for GraphQL validation errors
-  app.useGlobalFilters(new GraphQLExceptionFilter());
 
   // Enable request validation globally (class-validator)
   app.useGlobalPipes(
@@ -49,4 +45,4 @@ async function bootstrap() {
   console.log(`🚀 App running on port ${port}`);
   console.log(`📚 Swagger UI available at /docs`);
 }
-bootstrap();
+void bootstrap();

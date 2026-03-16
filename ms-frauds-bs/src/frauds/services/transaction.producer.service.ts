@@ -7,7 +7,6 @@ import { TransactionValidationRequestEvent } from '../dto/input/transaction-vali
 
 @Injectable()
 export class TransactionEventProducer {
-
   private kafka: Kafka;
   private producer: Producer;
   private topic: string;
@@ -22,7 +21,9 @@ export class TransactionEventProducer {
     });
     this.producer = this.kafka.producer();
     this.topic = kafkaConfig.transactionValidationResponseTopic;
-    this.schemaRegistry = new SchemaRegistry({ host: kafkaConfig.schemaRegistryUrl });
+    this.schemaRegistry = new SchemaRegistry({
+      host: kafkaConfig.schemaRegistryUrl,
+    });
     this.schemaSubject = kafkaConfig.transactionValidationSubject;
   }
 
@@ -51,7 +52,10 @@ export class TransactionEventProducer {
       try {
         id = await this.schemaRegistry.getLatestSchemaId(subject);
       } catch (err) {
-        this.logger.error(`Schema subject '${subject}' not found in registry.`, err);
+        this.logger.error(
+          `Schema subject '${subject}' not found in registry.`,
+          err,
+        );
         throw err;
       }
 
@@ -80,8 +84,10 @@ export class TransactionEventProducer {
       );
       this.logger.debug(`Kafka result: ${JSON.stringify(result)}`);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(
-        `Failed to publish transaction validation response: ${error.message}`,
+        `Failed to publish transaction validation response: ${errorMessage}`,
         error,
       );
       throw error;

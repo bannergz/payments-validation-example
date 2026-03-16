@@ -1,11 +1,15 @@
 import { randomUUID } from 'crypto';
 import { CreateTransactionInput } from '../dto/input/create.transaction.input.js';
 import { Injectable } from '@nestjs/common';
-import { getTransactionTypeById, TransactionType, TransactionTypeId } from '../utils/transaction-type.enum.js';
+import {
+  getTransactionTypeById,
+  TransactionTypeId,
+} from '../utils/transaction-type.enum.js';
 import { TransactionStatus } from '../utils/transaction-status.enum.js';
 import { Transaction } from '../model/transaction.model.js';
 import { TransactionEvent } from '../dto/output/transaction.event.js';
 import { TransactionValidationEvent } from '../dto/output/transaction-validation.event.js';
+import { PrismaTransactionResult } from '../../../prisma/model/prisma.model.js';
 
 @Injectable()
 export class TransactionMapper {
@@ -15,7 +19,9 @@ export class TransactionMapper {
    */
   createTransactionToDomain(input: CreateTransactionInput): Transaction {
     // Map transferTypeId to TransactionType
-    const transactionType = getTransactionTypeById(input.transferTypeId as TransactionTypeId);
+    const transactionType = getTransactionTypeById(
+      input.transferTypeId as TransactionTypeId,
+    );
 
     // Default status for new transactions
     const transactionStatus = TransactionStatus.Pending;
@@ -35,15 +41,15 @@ export class TransactionMapper {
   /**
    * Convert Prisma result to our domain Transaction model.
    */
-  fromPrismaToDomain(pr: any): Transaction {
+  fromPrismaToDomain(pr: PrismaTransactionResult): Transaction {
     return {
       transactionExternalId: pr.externalId,
       transactionType: {
-        id: pr.transactionType.id,
+        id: Number(pr.transactionType.id),
         name: pr.transactionType.name,
       },
       transactionStatus: {
-        id: pr.transactionStatus.id,
+        id: Number(pr.transactionStatus.id),
         name: pr.transactionStatus.name,
       },
       accountExternalIdDebit: pr.accountDebitId,
@@ -62,11 +68,11 @@ export class TransactionMapper {
       value: domain.value,
       createdAt: domain.createdAt.toISOString(),
     };
-
   }
 
   fromDomainToValidationEvent(domain: Transaction): TransactionValidationEvent {
-    return new TransactionValidationEvent(this.fromDomainToEventTransaction(domain));
+    return new TransactionValidationEvent(
+      this.fromDomainToEventTransaction(domain),
+    );
   }
-
 }

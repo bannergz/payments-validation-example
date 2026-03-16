@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HealthService } from './health.service.js';
+import { Health } from './model/health.model.js';
 
 @ApiTags('Health')
 @Controller('health')
@@ -11,17 +12,20 @@ export class HealthController {
    * Health check endpoint
    */
   @Get()
-  @ApiOperation({ summary: 'Health check', description: 'Returns the health status of the service.' })
+  @ApiOperation({
+    summary: 'Health check',
+    description: 'Returns the health status of the service.',
+  })
   @ApiOkResponse({
     description: 'Service is healthy',
     schema: {
       example: {
         status: 'ok',
-        message: 'Payments Service is healthy!',
+        message: 'Frauds Service is healthy!',
       },
     },
   })
-  health() {
+  health(): Health {
     return this.healthService.getHealth();
   }
 }

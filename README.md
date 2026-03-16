@@ -2,7 +2,15 @@
 
 > **New? Start here:** See the [Quick Start Guide](QUICKSTART.md) for step-by-step setup and deployment instructions.
 
-**Transaction system with async fraud validation using Kafka + Schema Registry**
+**Transaction system with async fraud validation using Kafka + Schema Registry, one command deploy with docker & make**
+
+A microservices event driven architecture example with key features:
+
+- Independent microservices: At least two main services (ms-paids-bs and ms-frauds-bs), each with its own logic and implementation.
+- Asynchronous communication: The services communicate via Kafka events, decoupling the flow and enabling asynchronous processing.
+- Decoupled anti-fraud validation: The payments service emits a transaction event, which the fraud service consumes, validates, and responds with another event.
+- Schema logging: Used to validate and version messages traveling through Kafka.
+- Not pure CQRS: While there is separation of responsibilities and asynchronicity, there is no strict separation of read and write models, nor are there separate paths for commands and queries.
 
 ## Table of Contents
 

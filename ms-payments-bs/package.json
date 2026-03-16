@@ -24,8 +24,10 @@
   "dependencies": {
     "@apollo/server": "^5.4.0",
     "@as-integrations/fastify": "^3.1.0",
+    "@fastify/static": "^9.0.0",
     "@kafkajs/confluent-schema-registry": "^3.9.0",
     "@nestjs/apollo": "^13.2.4",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.16",
     "@nestjs/core": "^11.1.16",
     "@nestjs/graphql": "^13.2.4",
@@ -89,8 +91,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": "./",
+    "testRegex": "test/.*\\.spec\\.ts$",
     "preset": "ts-jest/presets/default-esm",
     "extensionsToTreatAsEsm": [
       ".ts"

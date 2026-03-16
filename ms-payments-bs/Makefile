@@ -9,9 +9,9 @@ me-happy:
 	@${MAKE} infra-up
 	@${MAKE} schema
 	@${MAKE} kafka-topics
-	@echo -e "\033[32m \xE2\x9C\x94 \033[0m Services started. Waiting 3 seconds..."
-	@sleep 3
-	docker ps
+	@echo -e "\033[32m \xE2\x9C\x94 \033[0m Setting up prisma migrate"
+	npx prisma migrate dev
+	@echo -e "\033[32m \xE2\x9C\x94 \033[0m Starting services..."
 
 me-down:
 	@${MAKE} unleash-down
