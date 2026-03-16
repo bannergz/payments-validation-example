@@ -1,1 +1,1 @@
-export { KafkaConsumer, KafkaProducer } from './kafka.decorators';
+export { KafkaConsumer, KafkaProducer } from './kafka.decorators.js';

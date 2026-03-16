@@ -1,5 +1,5 @@
 // Export all public APIs
-export * from './types';
-export * from './services';
-export * from './config';
-export * from './decorators';
+export * from './types/index.js';
+export * from './services/index.js';
+export * from './config/index.js';
+export * from './decorators/index.js';
