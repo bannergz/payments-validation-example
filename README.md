@@ -135,6 +135,7 @@ make me-happy
 - ✅ Schema Registry (Port 8081)
 - ✅ Kafka UI (Port 8080)
 - ✅ MS-Payments-BS (Port 3000)
+- ✅ MS-Frauds-BS (Port 3001)
 
 ## API Endpoints
 
