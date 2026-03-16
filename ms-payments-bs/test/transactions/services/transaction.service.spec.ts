@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionService } from './transaction.service.js';
-import { PrismaService } from '../../db/prisma.service.js';
-import { TransactionMapper } from '../mappers/transaction.mapper.js';
-import { TransactionEventProducer } from './transaction.producer.service.js';
+import { TransactionService } from '../../../src/transactions/services/transaction.service.js';
+import { PrismaService } from '../../../src/db/prisma.service.js';
+import { TransactionMapper } from '../../../src/transactions/mappers/transaction.mapper.js';
+import { TransactionEventProducer } from '../../../src/transactions/services/transaction.producer.service.js';
 
 // Mocks
 class PrismaServiceMock {}

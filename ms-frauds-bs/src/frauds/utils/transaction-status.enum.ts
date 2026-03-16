@@ -5,4 +5,5 @@ export const TransactionStatus = {
 } as const;
 
 export type TransactionStatusKey = keyof typeof TransactionStatus;
-export type TransactionStatusValue = typeof TransactionStatus[TransactionStatusKey];
+export type TransactionStatusValue =
+  (typeof TransactionStatus)[TransactionStatusKey];

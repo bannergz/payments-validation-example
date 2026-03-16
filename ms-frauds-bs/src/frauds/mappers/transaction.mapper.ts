@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { Transaction } from '../model/transaction.model.js';
 import { TransactionEvent } from '../dto/input/transaction.event.js';
@@ -6,7 +5,6 @@ import { TransactionValidationRequestEvent } from '../dto/input/transaction-vali
 
 @Injectable()
 export class TransactionMapper {
-
   fromEventToDomain(event: TransactionEvent): Transaction {
     return {
       transactionExternalId: event.transactionExternalId,
@@ -25,11 +23,13 @@ export class TransactionMapper {
       value: domain.value,
       createdAt: domain.createdAt.toISOString(),
     };
-
   }
 
-  fromDomainToValidationEvent(domain: Transaction): TransactionValidationRequestEvent {
-    return new TransactionValidationRequestEvent(this.fromDomainToEventTransaction(domain));
+  fromDomainToValidationEvent(
+    domain: Transaction,
+  ): TransactionValidationRequestEvent {
+    return new TransactionValidationRequestEvent(
+      this.fromDomainToEventTransaction(domain),
+    );
   }
-
 }

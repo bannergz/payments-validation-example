@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionValidationResponseConsumer } from './transaction.validation.response.consumer.js';
-import { TransactionService } from '../services/transaction.service.js';
-import { TransactionMapper } from '../mappers/transaction.mapper.js';
+import { TransactionValidationResponseConsumer } from '../../../src/transactions/event/transaction.validation.response.consumer.js';
+import { TransactionService } from '../../../src/transactions/services/transaction.service.js';
+import { TransactionMapper } from '../../../src/transactions/mappers/transaction.mapper.js';
 
 // Mocks
 class TransactionServiceMock {}

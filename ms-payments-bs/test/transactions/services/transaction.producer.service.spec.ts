@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionEventProducer } from './transaction.producer.service.js';
+import { TransactionEventProducer } from '../../../src/transactions/services/transaction.producer.service.js';
 
 describe('TransactionEventProducer', () => {
   let service: TransactionEventProducer;
