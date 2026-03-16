@@ -1,0 +1,41 @@
+{
+  "name": "lib-nest-kafkalizer",
+  "version": "1.0.0",
+  "description": "Shared NestJS Kafka library with parametrizable configuration and optional Schema Registry support",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@kafkajs/confluent-schema-registry": "^3.9.0",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/core": "^10.0.0",
+    "kafkajs": "^2.2.4",
+    "reflect-metadata": "^0.1.13"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/core": "^10.0.0",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "nestjs",
+    "kafka",
+    "kafkajs",
+    "schema-registry",
+    "confluent",
+    "event-driven",
+    "microservices"
+  ],
+  "author": "",
+  "license": "MIT"
+}
