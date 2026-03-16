@@ -59,7 +59,8 @@ docker-compose logs -f
 | **GraphQL API**     | http://localhost:3000/graphql | Create and query transactions |
 | **Kafka UI**        | http://localhost:8080         | Monitor topics and messages   |
 | **Schema Registry** | http://localhost:8081         | Manage schemas                |
-| **Health Check**    | http://localhost:3000/health  | App health status             |
+| **Health Check**    | http://localhost:3000/health  | Payments health status        |
+| **Health Check**    | http://localhost:3001/health  | Frauds health status          |
 
 ---
 
