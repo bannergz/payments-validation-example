@@ -1,4 +1,5 @@
-export { SchemaRegistryService } from './schema-registry.service';
-export { KafkaProducerService } from './kafka-producer.service';
-export { KafkaConsumerService, MessageHandler } from './kafka-consumer.service';
-export { KafkaServiceRegistry } from './kafka-service-registry.service';
+export { SchemaRegistryService } from './schema-registry.service.js';
+export { KafkaProducerService } from './kafka-producer.service.js';
+export { KafkaConsumerService } from './kafka-consumer.service.js';
+export type { MessageHandler } from './kafka-consumer.service.js';
+export { KafkaServiceRegistry } from './kafka-service-registry.service.js';

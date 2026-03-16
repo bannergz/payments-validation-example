@@ -1,2 +1,2 @@
-export { KafkaModule } from './kafka.module';
-export { KafkaConfigBuilder } from './kafka-config.builder';
+export { KafkaModule } from './kafka.module.js';
+export { KafkaConfigBuilder } from './kafka-config.builder.js';

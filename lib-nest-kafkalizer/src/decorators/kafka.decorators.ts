@@ -1,4 +1,4 @@
-import { KafkaConsumerConfig } from '../types';
+import { KafkaConsumerConfig } from '../types/index.js';
 
 /**
  * Decorador para marcar una clase como un Kafka Consumer
