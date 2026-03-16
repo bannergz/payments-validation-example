@@ -7,11 +7,10 @@ export interface KafkaConnectionConfig {
   brokers: string[];
   clientId: string;
   ssl?: boolean;
-  sasl?: {
-    mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
-    username: string;
-    password: string;
-  };
+  sasl?:
+    | { mechanism: 'plain'; username: string; password: string }
+    | { mechanism: 'scram-sha-256'; username: string; password: string }
+    | { mechanism: 'scram-sha-512'; username: string; password: string };
 }
 
 /**
@@ -38,6 +37,14 @@ export interface KafkaProducerConfig {
 }
 
 /**
+ * Configuración nombrada para un producer
+ */
+export interface NamedProducerConfig {
+  name: string;
+  config: KafkaProducerConfig;
+}
+
+/**
  * Configuración para un consumer
  */
 export interface KafkaConsumerConfig {
@@ -48,6 +55,14 @@ export interface KafkaConsumerConfig {
   eachMessage?: (payload: any) => Promise<void>;
   sessionTimeout?: number;
   heartbeatInterval?: number;
+}
+
+/**
+ * Configuración nombrada para un consumer
+ */
+export interface NamedConsumerConfig {
+  name: string;
+  config: KafkaConsumerConfig;
 }
 
 /**

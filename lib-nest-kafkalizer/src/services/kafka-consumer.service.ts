@@ -3,7 +3,6 @@ import { Kafka, Consumer, EachMessagePayload } from 'kafkajs';
 import {
   KafkaConnectionConfig,
   KafkaConsumerConfig,
-  SchemaRegistryConfig,
   KafkaMessage,
 } from '../types';
 import { SchemaRegistryService } from './schema-registry.service';
@@ -27,7 +26,6 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     private readonly schemaRegistryService: SchemaRegistryService,
     private readonly kafkaConfig: KafkaConnectionConfig,
     private readonly consumerConfig: KafkaConsumerConfig,
-    private readonly schemaRegistryConfig: SchemaRegistryConfig,
   ) {}
 
   async onModuleInit(): Promise<void> {

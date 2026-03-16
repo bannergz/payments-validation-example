@@ -9,8 +9,10 @@ import { SchemaRegistryConfig } from '../types';
 export class SchemaRegistryService {
   private registry: SchemaRegistry | null = null;
   private enabled: boolean = false;
+  private config: SchemaRegistryConfig | null = null;
 
   async initialize(config: SchemaRegistryConfig): Promise<void> {
+    this.config = config;
     if (config.enabled && config.url) {
       this.enabled = true;
       this.registry = new SchemaRegistry({
@@ -21,6 +23,10 @@ export class SchemaRegistryService {
 
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  getConfig(): SchemaRegistryConfig | null {
+    return this.config;
   }
 
   /**

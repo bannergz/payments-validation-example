@@ -33,7 +33,9 @@ Los servicios pueden referenciar esta librería en su `package.json`:
 
 ## Uso Básico
 
-### 1. Importar el módulo en AppModule
+### 1. Importar el módulo en AppModule (Opción 1: Modo Simple)
+
+Para servicios con un único productor o consumidor:
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -69,6 +71,75 @@ import { KafkaModule, KafkaConfigBuilder } from 'lib-nest-kafkalizer';
 export class AppModule {}
 ```
 
+### 1B. Importar el módulo en AppModule (Opción 2: Modo Multi-Productor/Consumidor)
+
+Para servicios que necesitan múltiples productores o consumidores con diferentes tópicos/grupos:
+
+```typescript
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { KafkaModule } from 'lib-nest-kafkalizer';
+
+@Module({
+  imports: [
+    KafkaModule.registerAsync({
+      useFactory: (configService: ConfigService) => {
+        return {
+          kafkaConfig: {
+            brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(','),
+            clientId: process.env.APP_NAME || 'my-service',
+          },
+          schemaRegistryConfig: {
+            enabled: process.env.ENABLE_SCHEMA_REGISTRY === 'true',
+            url: process.env.SCHEMA_REGISTRY_URL,
+          },
+          // Múltiples productores
+          producers: [
+            {
+              name: 'ValidationRequestProducer',
+              config: {
+                topic: 'transaction-validation-request',
+              },
+            },
+            {
+              name: 'ResponseProducer',
+              config: {
+                topic: 'transaction-validation-response',
+              },
+            },
+            {
+              name: 'NotificationProducer',
+              config: {
+                topic: 'notifications',
+              },
+            },
+          ],
+          // Múltiples consumidores
+          consumers: [
+            {
+              name: 'ValidationResponseConsumer',
+              config: {
+                topic: 'transaction-validation-response',
+                groupId: 'payments-service-group',
+              },
+            },
+            {
+              name: 'NotificationConsumer',
+              config: {
+                topic: 'notifications',
+                groupId: 'payments-service-group',
+              },
+            },
+          ],
+        };
+      },
+      inject: [ConfigService],
+    }),
+  ],
+})
+export class AppModule {}
+```
+
 ### 2. Usar en un servicio (Producer)
 
 ```typescript
@@ -95,6 +166,45 @@ export class TransactionEventProducer {
 }
 ```
 
+### 2B. Usar en un servicio (Multi-Producer - Opción 2)
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { KafkaServiceRegistry } from 'lib-nest-kafkalizer';
+
+@Injectable()
+export class TransactionEventProducer {
+  constructor(private kafkaRegistry: KafkaServiceRegistry) {}
+
+  async publishValidationRequest(data: any) {
+    const producer = this.kafkaRegistry.getProducer(
+      'ValidationRequestProducer',
+    );
+    return producer.publish(data, {
+      key: data.transactionExternalId,
+      headers: {
+        'correlation-id': data.eventId,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+
+  async publishResponse(data: any) {
+    const producer = this.kafkaRegistry.getProducer('ResponseProducer');
+    return producer.publish(data, {
+      key: data.transactionExternalId,
+    });
+  }
+
+  async publishNotification(data: any) {
+    const producer = this.kafkaRegistry.getProducer('NotificationProducer');
+    return producer.publish(data, {
+      key: data.userId,
+    });
+  }
+}
+```
+
 ### 3. Usar en un servicio (Consumer)
 
 ```typescript
@@ -116,32 +226,126 @@ export class TransactionResponseConsumer implements OnModuleInit {
 }
 ```
 
-## Configuración Avanzada
-
-### Usar decoradores
+### 3B. Usar en un servicio (Multi-Consumer - Opción 2)
 
 ```typescript
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { KafkaConsumer, KafkaConsumerService, MessageHandler } from 'lib-nest-kafkalizer';
+import { KafkaServiceRegistry, MessageHandler } from 'lib-nest-kafkalizer';
 
-@KafkaConsumer({
-  topic: 'transaction-validation-response',
-  groupId: 'payments-service-group',
-  fromBeginning: false,
-})
 @Injectable()
 export class TransactionResponseConsumer implements OnModuleInit {
-  constructor(private kafkaConsumer: KafkaConsumerService) {}
+  constructor(private kafkaRegistry: KafkaServiceRegistry) {}
 
   async onModuleInit() {
-    this.kafkaConsumer.setMessageHandler(this.handleMessage.bind(this));
+    // Configurar handler para ValidationResponseConsumer
+    const validationConsumer = this.kafkaRegistry.getConsumer(
+      'ValidationResponseConsumer',
+    );
+    validationConsumer.setMessageHandler(this.handleValidationResponse.bind(this));
+
+    // Configurar handler para NotificationConsumer
+    const notificationConsumer = this.kafkaRegistry.getConsumer(
+      'NotificationConsumer',
+    );
+    notificationConsumer.setMessageHandler(this.handleNotification.bind(this));
   }
 
-  private async handleMessage: MessageHandler = async (message) => {
-    // Procesar
+  private async handleValidationResponse: MessageHandler = async (message) => {
+    console.log('Validation response received:', message.value);
+    // Procesar respuesta de validación
+  };
+
+  private async handleNotification: MessageHandler = async (message) => {
+    console.log('Notification received:', message.value);
+    // Procesar notificación
   };
 }
 ```
+
+## Configuración Avanzada
+
+### Multi-Producer y Multi-Consumer (Recomendado para servicios complejos)
+
+Si tu servicio necesita consumir de múltiples tópicos o producir en múltiples tópicos, usa los arrays `producers` y `consumers`:
+
+```typescript
+const kafkaOptions = {
+  kafkaConfig: {
+    /* ... */
+  },
+  schemaRegistryConfig: {
+    /* ... */
+  },
+
+  // Múltiples productores - cada uno con su propio tópico
+  producers: [
+    { name: 'ValidationProducer', config: { topic: 'validation-topic' } },
+    { name: 'NotificationProducer', config: { topic: 'notifications' } },
+    { name: 'AuditProducer', config: { topic: 'audit-log' } },
+  ],
+
+  // Múltiples consumidores - cada uno con su propio tópico y grupo
+  consumers: [
+    {
+      name: 'ValidationResponseConsumer',
+      config: { topic: 'validation-response', groupId: 'my-service-group' },
+    },
+    {
+      name: 'EventNotificationConsumer',
+      config: { topic: 'events', groupId: 'my-service-group' },
+    },
+  ],
+};
+```
+
+**Inyección en servicios:**
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { KafkaServiceRegistry } from 'lib-nest-kafkalizer';
+
+@Injectable()
+export class MyService {
+  constructor(private kafkaRegistry: KafkaServiceRegistry) {}
+
+  async processValidation(data: any) {
+    // Obtener un productor específico
+    const producer = this.kafkaRegistry.getProducer('ValidationProducer');
+    await producer.publish(data);
+  }
+
+  async sendNotification(data: any) {
+    const notificationProducer = this.kafkaRegistry.getProducer(
+      'NotificationProducer',
+    );
+    await notificationProducer.publish(data);
+  }
+
+  // Verificar que un productor/consumidor existe antes de usarlo
+  hasNotificationProducer() {
+    return this.kafkaRegistry.hasProducer('NotificationProducer');
+  }
+
+  // Listar todos los productores/consumidores disponibles
+  getAvailableProducers() {
+    return this.kafkaRegistry.getProducerNames();
+  }
+
+  getAvailableConsumers() {
+    return this.kafkaRegistry.getConsumerNames();
+  }
+}
+```
+
+**Ventajas de la Opción 2 (Multi):**
+
+- ✅ Flexibilidad: Cada productor/consumidor puede tener diferentes configuraciones
+- ✅ Escalabilidad: Fácil agregar nuevos tópicos sin modificar el código existente
+- ✅ Separation of Concerns: Cada tópico con su lógica independiente
+- ✅ Testing: Más fácil mockear servicios específicos
+- ✅ Backward compatible: La Opción 1 (modo simple) aún funciona
+
+### Usar decoradores (Opcional)
 
 ### Configuración con Schema Registry
 
@@ -189,12 +393,16 @@ SCHEMA_REGISTRY_SUBJECT=my-schema-name
 
 ## Migration Guide
 
-### Antes (en ms-frauds-bs)
+### De implementación manual a lib-nest-kafkalizer (Opción 2: Multi)
+
+**Antes** (ms-frauds-bs original - con hardcoding):
 
 ```typescript
 // src/frauds/config/kafka.config.ts
 export const kafkaConfig = {
-  /* hardcoded */
+  clientId: 'ms-frauds-bs',
+  brokers: ['kafka:29092'],
+  // ...
 };
 
 // src/frauds/event/transaction.request.consumer.ts
@@ -202,22 +410,24 @@ export class TransactionRequestConsumer implements OnModuleInit {
   private consumer: Consumer;
 
   constructor() {
-    this.kafka = new Kafka({
-      /* config */
-    });
+    this.kafka = new Kafka(kafkaConfig);
     this.consumer = this.kafka.consumer({
-      /* config */
+      groupId: 'frauds-service-group',
     });
   }
 
   async onModuleInit() {
     await this.consumer.connect();
-    // Manual subscribe
+    await this.consumer.subscribe({
+      topics: ['transaction-validation-request'],
+      fromBeginning: false,
+    });
+    // Manual message handling
   }
 }
 ```
 
-### Después (con lib-nest-kafkalizer)
+**Después** (con lib-nest-kafkalizer - Opción 2):
 
 ```typescript
 // app.module.ts
@@ -225,12 +435,20 @@ export class TransactionRequestConsumer implements OnModuleInit {
   imports: [
     KafkaModule.registerAsync({
       useFactory: () => ({
-        kafkaConfig: KafkaConfigBuilder.fromEnv(),
-        schemaRegistryConfig: KafkaConfigBuilder.schemaRegistry(true),
-        consumerConfig: KafkaConfigBuilder.forConsumer(
-          'transaction-validation-request',
-          'frauds-service-group',
-        ),
+        kafkaConfig: {
+          brokers: ['kafka:29092'],
+          clientId: 'ms-frauds-bs',
+        },
+        schemaRegistryConfig: { enabled: true },
+        consumers: [
+          {
+            name: 'TransactionRequestConsumer',
+            config: {
+              topic: 'transaction-validation-request',
+              groupId: 'frauds-service-group',
+            },
+          },
+        ],
       }),
     }),
   ],
@@ -240,17 +458,28 @@ export class AppModule {}
 // src/frauds/event/transaction.request.consumer.ts
 @Injectable()
 export class TransactionRequestConsumer implements OnModuleInit {
-  constructor(private kafkaConsumer: KafkaConsumerService) {}
+  constructor(private kafkaRegistry: KafkaServiceRegistry) {}
 
   async onModuleInit() {
-    this.kafkaConsumer.setMessageHandler(this.handleMessage.bind(this));
+    const consumer = this.kafkaRegistry.getConsumer(
+      'TransactionRequestConsumer',
+    );
+    consumer.setMessageHandler(this.handleMessage.bind(this));
   }
 
   private async handleMessage: MessageHandler = async (message) => {
-    // Procesamiento
+    // Procesamiento automático
   };
 }
 ```
+
+**Beneficios de la migración:**
+
+- 🎯 Configuración centralizada
+- 🔄 Auto-conexión/desconexión
+- 📊 Mejor error handling
+- 🧪 Más fácil de testear
+- 🚀 Schema Registry integrado
 
 ## API Reference
 

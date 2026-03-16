@@ -3,7 +3,6 @@ import { Kafka, Producer, IHeaders } from 'kafkajs';
 import {
   KafkaConnectionConfig,
   KafkaProducerConfig,
-  SchemaRegistryConfig,
   PublishOptions,
   PublishResult,
   MessageMetadata,
@@ -23,7 +22,6 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     private readonly schemaRegistryService: SchemaRegistryService,
     private readonly kafkaConfig: KafkaConnectionConfig,
     private readonly producerConfig: KafkaProducerConfig,
-    private readonly schemaRegistryConfig: SchemaRegistryConfig,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -47,9 +45,8 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       });
 
       this.producer = this.kafka.producer({
-        compression: this.producerConfig.compression,
-        timeout: this.producerConfig.timeout,
         idempotent: this.producerConfig.idempotent,
+        ...(this.producerConfig.compression && { compression: this.producerConfig.compression }),
       });
 
       await this.producer.connect();
@@ -94,8 +91,8 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
 
       return records.map((record) => ({
         partition: record.partition,
-        offset: record.offset,
-        timestamp: record.timestamp,
+        offset: record.offset || '0',
+        timestamp: record.timestamp || new Date().toISOString(),
       }));
     } catch (error) {
       this.logger.error(
@@ -112,7 +109,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
   async publishBatch<T>(
     values: T[],
     baseOptions: PublishOptions = {},
-  ): Promise<PublishResult[][]> {
+  ): Promise<PublishResult[]> {
     if (!this.producer) {
       throw new Error('Producer is not connected');
     }
@@ -128,13 +125,11 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
         timeout: this.producerConfig.timeout || 10000,
       });
 
-      return records.map((record) => [
-        {
-          partition: record.partition,
-          offset: record.offset,
-          timestamp: record.timestamp,
-        },
-      ]);
+      return records.map((record) => ({
+        partition: record.partition,
+        offset: record.offset || '0',
+        timestamp: record.timestamp || new Date().toISOString(),
+      }));
     } catch (error) {
       this.logger.error(
         `Failed to publish batch to ${this.producerConfig.topic}`,
@@ -155,8 +150,9 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     let messageValue: Buffer | string;
 
     if (this.schemaRegistryService.isEnabled()) {
+      const config = this.schemaRegistryService.getConfig();
       const schemaId = await this.schemaRegistryService.getLatestSchemaId(
-        this.schemaRegistryConfig.subject!,
+        config?.subject!,
       );
       messageValue = await this.schemaRegistryService.encode(
         schemaId,
